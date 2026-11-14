@@ -1,0 +1,25 @@
+# Para desarrollo/pruebas locales (en EC2 también funciona si RDS/S3 son accesibles).
+# Las credenciales reales van en backend/.env (no en este archivo).
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    container_name: lab6-backend
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000/api}
+    container_name: lab6-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
